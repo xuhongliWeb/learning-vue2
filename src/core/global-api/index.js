@@ -1,10 +1,10 @@
 /* @flow */
 
 import config from '../config'
-import { initUse } from './use'
-import { initMixin } from './mixin'
-import { initExtend } from './extend'
-import { initAssetRegisters } from './assets'
+import { initUse } from './use' // 挂载use方法
+import { initMixin } from './mixin' // 挂载mixin方法
+import { initExtend } from './extend' // 挂载extend方法
+import { initAssetRegisters } from './assets'  // 挂载 filter component direcive
 import { set, del } from '../observer/index'
 import { ASSET_TYPES } from 'shared/constants'
 import builtInComponents from '../components/index'
@@ -20,7 +20,9 @@ import {
 
 export function initGlobalAPI (Vue: GlobalAPI) {
   // config
+  debugger
   const configDef = {}
+  debugger
   configDef.get = () => config
   if (process.env.NODE_ENV !== 'production') {
     configDef.set = () => {
@@ -41,9 +43,9 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     defineReactive
   }
 
-  Vue.set = set
-  Vue.delete = del
-  Vue.nextTick = nextTick
+  Vue.set = set // 挂载 set
+  Vue.delete = del  // 挂载 delete
+  Vue.nextTick = nextTick  // 挂载 nextTick
 
   // 2.6 explicit observable API
   Vue.observable = <T>(obj: T): T => {
@@ -67,3 +69,6 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   initExtend(Vue)
   initAssetRegisters(Vue)
 }
+
+
+{/* ![image.png](https://upload-images.jianshu.io/upload_images/2639854-215e560d46f015e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240) */}

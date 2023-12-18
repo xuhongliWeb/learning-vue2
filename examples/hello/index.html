@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vue.js grid component example</title>
+    <!-- Delete ".min" for console warnings in development -->
+    <script src="../../dist/vue.js"></script>
+  </head>
+  <body>
+    <!-- demo root element -->
+    <div id="demo">
+      {{message}}
+      <div class="vx-button">按钮</div>
+
+    </div>
+
+    <script>
+      var demo = new Vue({
+        el: "#demo",
+        data: {
+          message: "Hello",
+        },
+        beforeCreate: function() {
+          console.log('beforeCreate');
+
+        },
+        created:function() {
+          console.log('created');
+        },
+        beforeMount:function() {
+          console.log('beforeMount');
+
+        },
+        mounted:function(){
+          console.log('mounted');
+
+        },
+        beforeDestroy: function() {
+          console.log('beforeDestroy');
+
+        },
+        destroyed: function() {
+          console.log('destroyed');
+
+        }
+      });
+    </script>
+  </body>
+</html>

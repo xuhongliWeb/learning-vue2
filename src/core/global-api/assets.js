@@ -2,7 +2,7 @@
 
 import { ASSET_TYPES } from 'shared/constants'
 import { isPlainObject, validateComponentName } from '../util/index'
-
+// 其中ASSET_TYPES是一个定义在中的一个数组，然后在initAssetRegisters()方法中遍历这个数组，依次在Vue构造函数上挂载Vue.component()、Vue.directive()和Vue.filter()方法
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
