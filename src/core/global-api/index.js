@@ -20,9 +20,8 @@ import {
 
 export function initGlobalAPI (Vue: GlobalAPI) {
   // config
-  debugger
+
   const configDef = {}
-  debugger
   configDef.get = () => config
   if (process.env.NODE_ENV !== 'production') {
     configDef.set = () => {

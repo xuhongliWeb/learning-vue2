@@ -61,13 +61,20 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
+    // 初始化生命周期 $parent children refs root 等
     initLifecycle(vm)
+    //初始化事件 emit off
     initEvents(vm)
+    // 初始化 slots createElement attrs $listeners 等
     initRender(vm)
+    // 调用beforeCreate钩子函数并且触发beforeCreate钩子事件
     callHook(vm, 'beforeCreate')
+    // 在data 和props 之前处理inject
     initInjections(vm) // resolve injections before data/props
+    // 初始化props、methods、data、computed与watch
     initState(vm)
     initProvide(vm) // resolve provide after data/props
+  // 调用 created 钩子函数
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -76,9 +83,9 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
-    if (vm.$options.el) {
-      vm.$mount(vm.$options.el)
+    debugger
+    if (vm.$options.el) { // 是否有el
+      vm.$mount(vm.$options.el) // mount 挂载
     }
   }
 }

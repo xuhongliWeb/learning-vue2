@@ -35,7 +35,7 @@ const sharedPropertyDefinition = {
   get: noop,
   set: noop
 }
-
+/*通过proxy函数将_data（或者_props等）上面的数据代理到vm上，这样就可以用app.text代替app._data.text了。*/
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
     return this[sourceKey][key]
@@ -48,11 +48,36 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 
 export function initState (vm: Component) {
   vm._watchers = []
+
+//   {
+//     "components": {},
+//     "directives": {},
+//     "filters": {},
+//     "el": "#demo",
+//     "beforeCreate": [
+//         null
+//     ],
+//     "created": [
+//         null
+//     ],
+//     "beforeMount": [
+//         null
+//     ],
+//     "mounted": [
+//         null
+//     ],
+//     "beforeDestroy": [
+//         null
+//     ],
+//     "destroyed": [
+//         null
+//     ]
+// }
   const opts = vm.$options
-  if (opts.props) initProps(vm, opts.props)
-  if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.props) initProps(vm, opts.props) // 初始化props
+  if (opts.methods) initMethods(vm, opts.methods) // 初始化方法
   if (opts.data) {
-    initData(vm)
+    initData(vm) // 初始化data
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
@@ -114,7 +139,9 @@ function initData (vm: Component) {
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
-    : data || {}
+    : data || {} // 处理数据
+  /*对对象类型进行严格检查，只有当对象是纯javascript对象的时候返回true*/
+
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -128,6 +155,8 @@ function initData (vm: Component) {
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
+  //遍历data中的数据
+
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
@@ -138,6 +167,9 @@ function initData (vm: Component) {
         )
       }
     }
+    // 确保data 中的key 不和props 中的重复，数据属性“${key}”已经被声明为一个道具。' +
+
+// '使用prop的默认值。
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
@@ -145,6 +177,8 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+       /*判断是否是保留字段*/
+      //  将data上面的属性代理到了vm实例上*/
       proxy(vm, `_data`, key)
     }
   }
@@ -286,7 +320,7 @@ function initMethods (vm: Component, methods: Object) {
         )
       }
     }
-    vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm)
+    vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm) // 绑定this为 vue
   }
 }
 
@@ -303,7 +337,7 @@ function initWatch (vm: Component, watch: Object) {
   }
 }
 
-function createWatcher (
+function  createWatcher(
   vm: Component,
   expOrFn: string | Function,
   handler: any,
@@ -339,8 +373,8 @@ export function stateMixin (Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
-  Object.defineProperty(Vue.prototype, '$data', dataDef)
-  Object.defineProperty(Vue.prototype, '$props', propsDef)
+  Object.defineProperty(Vue.prototype, '$data', dataDef) // 获取$data 返回  data 数据
+  Object.defineProperty(Vue.prototype, '$props', propsDef) // 获取$props 返回  props 数据
 
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
