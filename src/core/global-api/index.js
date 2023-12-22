@@ -45,7 +45,6 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   Vue.set = set // 挂载 set
   Vue.delete = del  // 挂载 delete
   Vue.nextTick = nextTick  // 挂载 nextTick
-
   // 2.6 explicit observable API
   Vue.observable = <T>(obj: T): T => {
     observe(obj)

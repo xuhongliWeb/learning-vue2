@@ -81,12 +81,14 @@ export function initState (vm: Component) {
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 初始化Computed
   if (opts.computed) initComputed(vm, opts.computed)
   if (opts.watch && opts.watch !== nativeWatch) {
+  // 初始化watch
     initWatch(vm, opts.watch)
   }
 }
-
+// props校验和求值、props响应式和props代理
 function initProps (vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
@@ -134,14 +136,15 @@ function initProps (vm: Component, propsOptions: Object) {
   }
   toggleObserving(true)
 }
-
+// 类型判断取值 - 命名冲突判断 - proxy 代理 - observe(data)。
 function initData (vm: Component) {
+  // data 为函数 调用getData 取值
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {} // 处理数据
-  /*对对象类型进行严格检查，只有当对象是纯javascript对象的时候返回true*/
 
+  // 限制data 为函数
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -159,6 +162,8 @@ function initData (vm: Component) {
 
   while (i--) {
     const key = keys[i]
+    // 命名冲突判断
+    // 不能以$或者_开头
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -180,6 +185,11 @@ function initData (vm: Component) {
        /*判断是否是保留字段*/
       //  将data上面的属性代理到了vm实例上*/
       proxy(vm, `_data`, key)
+       // 代理前
+      // console.log(this._data.msg)
+      // proxy(vm, '_data', 'msg')
+      // 代理后
+      // console.log(this.msg)
     }
   }
   // observe data
@@ -202,7 +212,9 @@ export function getData (data: Function, vm: Component): any {
 const computedWatcherOptions = { lazy: true }
 
 function initComputed (vm: Component, computed: Object) {
+  debugger
   // $flow-disable-line
+  // 缓存当前实例所有计算属性的watcher
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
   const isSSR = isServerRendering()
@@ -219,6 +231,7 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
+      // 这里的computedWatcherOptions参数传递了一个lazy为true，会使得watch实例的dirty为true
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -231,6 +244,7 @@ function initComputed (vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
+      /*定义计算属性*/
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
       if (key in vm.$data) {
@@ -250,10 +264,12 @@ export function defineComputed (
   userDef: Object | Function
 ) {
   const shouldCache = !isServerRendering()
+  // 返回_computedWatchers 存入的观察者函数， 在被调用时触发
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
       : createGetterInvoker(userDef)
+    // 当userDef是一个function的时候是不需要setter的，所以这边给它设置成了空函数。
     sharedPropertyDefinition.set = noop
   } else {
     sharedPropertyDefinition.get = userDef.get
@@ -279,9 +295,12 @@ function createComputedGetter (key) {
   return function computedGetter () {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
+      // 依赖数据发生变化时通知watcher update 更新dirty 的值
       if (watcher.dirty) {
+        // dirty 变为false
         watcher.evaluate()
       }
+      // 依赖收集
       if (Dep.target) {
         watcher.depend()
       }
@@ -295,7 +314,7 @@ function createGetterInvoker(fn) {
     return fn.call(this, this)
   }
 }
-
+// 首先判断了我们定义的methods是不是function类型，如果不是则赋值为一个noop空函数，如果是则把这个方法进行bind绑定，其中传入的vm为当前实例。这样做的目的是为了把methods方法中的this指向当前实例，方便我们就能在methods方法中通过this.xxx的形式很方便的访问到props、data以及computed等与实例相关的属性或方法
 function initMethods (vm: Component, methods: Object) {
   const props = vm.$options.props
   for (const key in methods) {
@@ -307,13 +326,13 @@ function initMethods (vm: Component, methods: Object) {
           vm
         )
       }
-      if (props && hasOwn(props, key)) {
+      if (props && hasOwn(props, key)) { // props 命名冲突
         warn(
           `Method "${key}" has already been defined as a prop.`,
           vm
         )
       }
-      if ((key in vm) && isReserved(key)) {
+      if ((key in vm) && isReserved(key)) { // 内置名称冲突
         warn(
           `Method "${key}" conflicts with an existing Vue instance method. ` +
           `Avoid defining component methods that start with _ or $.`

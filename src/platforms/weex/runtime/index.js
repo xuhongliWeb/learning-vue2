@@ -32,7 +32,6 @@ Vue.prototype.$mount = function (
   el?: any,
   hydrating?: boolean
 ): Component {
-  debugger
   return mountComponent(
     this,
     el && query(el, this.$document),

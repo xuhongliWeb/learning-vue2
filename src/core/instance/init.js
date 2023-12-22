@@ -73,6 +73,7 @@ export function initMixin (Vue: Class<Component>) {
     initInjections(vm) // resolve injections before data/props
     // 初始化props、methods、data、computed与watch
     initState(vm)
+    // resolve provide after data/props
     initProvide(vm) // resolve provide after data/props
   // 调用 created 钩子函数
     callHook(vm, 'created')
@@ -83,7 +84,6 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-    debugger
     if (vm.$options.el) { // 是否有el
       vm.$mount(vm.$options.el) // mount 挂载
     }

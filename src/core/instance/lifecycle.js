@@ -336,7 +336,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
-  const handlers = vm.$options[hook] // 执行new Vue 中传入的生命周期
+  const handlers = vm.$options[hook] // 在传入的options 中检查钩子是否存在，存在就执行对应的方法
   const info = `${hook} hook`
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {
