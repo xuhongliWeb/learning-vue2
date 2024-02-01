@@ -7,6 +7,7 @@ import config from '../config'
 let uid = 0
 
 /**
+ * 当对data上的对象进行修改值的时候会触发它的setter，那么取值的时候自然就会触发getter事件，所以我们只要在最开始进行一次render，那么所有被渲染所依赖的data中的数据就会被getter收集到Dep的subs中去。在对data中的数据进行修改的时候setter只会触发Dep的subs的函数。
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */

@@ -23,6 +23,8 @@ let uid = 0
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
+订阅者，当依赖收集的时候会addSub到sub中，在修改data中数据的时候会触发dep对象的notify，通知所有Watcher对象去修改对应视图。
+ *
  */
 export default class Watcher {
   vm: Component;
@@ -100,6 +102,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    /*将自身watcher观察者实例设置给Dep.target，用以依赖收集。*/
     pushTarget(this)
     let value
     const vm = this.vm

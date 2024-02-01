@@ -132,6 +132,10 @@ function initProps (vm: Component, propsOptions: Object) {
     // instantiation here.
     if (!(key in vm)) {
       proxy(vm, `_props`, key)
+      // 代理前
+      // console.log(this._props.name)
+      // 代理后
+      // console.log(this.name)
     }
   }
   toggleObserving(true)
@@ -212,7 +216,6 @@ export function getData (data: Function, vm: Component): any {
 const computedWatcherOptions = { lazy: true }
 
 function initComputed (vm: Component, computed: Object) {
-  debugger
   // $flow-disable-line
   // 缓存当前实例所有计算属性的watcher
   const watchers = vm._computedWatchers = Object.create(null)
@@ -339,6 +342,8 @@ function initMethods (vm: Component, methods: Object) {
         )
       }
     }
+    // initMethods()方法实现中最重要的一段代码
+    // 首先判断了methods 定义的方法是不是function 类型， 不是复制为一个空空函数，如果是方法则把这个方法进行bind 绑定， bind 绑定是为了把methods 方法中的this 只想 vm当前实例， 方便以后在methods 中this.xxx 访问到props ，data等的数据和方法
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm) // 绑定this为 vue
   }
 }

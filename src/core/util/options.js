@@ -169,7 +169,7 @@ function dedupeHooks (hooks) {
   return res
 }
 
-LIFECYCLE_HOOKS.forEach(hook => {
+LIFECYCLE_HOOKS.forEach(hook => { //初始化生命周期数据
   strats[hook] = mergeHook
 })
 
@@ -294,28 +294,36 @@ export function validateComponentName (name: string) {
 /**
  * Ensure all props option syntax are normalized into the
  * Object-based format.
+ * 规范props
+ *
  */
 function normalizeProps (options: Object, vm: ?Component) {
-  const props = options.props
+  const props = options.props // [age, name, type]
   if (!props) return
   const res = {}
   let i, val, name
   if (Array.isArray(props)) {
-    i = props.length
+    // props: ['age', 'name','type']
+    i = props.length // 3
     while (i--) {
-      val = props[i]
+      val = props[i] // type name age 倒序遍历数组
+      // 数组形式：当props是数组时，会首先倒序遍历这个数组，然后使用typeof来判断数组元素的类型。如果不是string类型，则在开发环境下报错，如果是string类型，则先把key转化为驼峰形式，然后把这个key赋值到临时的res对象中，此时的键值固定为{ type: null }
       if (typeof val === 'string') {
-        name = camelize(val)
+        name = camelize(val) // 转为驼峰
         res[name] = { type: null }
       } else if (process.env.NODE_ENV !== 'production') {
         warn('props must be strings when using array syntax.')
       }
     }
   } else if (isPlainObject(props)) {
+    // props: {
+    //   name: String,
+    //   age: Number
+    // }
     for (const key in props) {
-      val = props[key]
-      name = camelize(key)
-      res[name] = isPlainObject(val)
+      val = props[key] // 值String Number
+      name = camelize(key) // key 转为 驼峰
+      res[name] = isPlainObject(val) // 如果值为对象不改变 否则 {type: 'String}
         ? val
         : { type: val }
     }
@@ -393,7 +401,7 @@ export function mergeOptions (
   if (process.env.NODE_ENV !== 'production') {
     checkComponents(child)
   }
-
+  debugger
   if (typeof child === 'function') {
     child = child.options
   }

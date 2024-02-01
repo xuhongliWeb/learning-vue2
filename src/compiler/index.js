@@ -1,8 +1,8 @@
 /* @flow */
 
-import { parse } from './parser/index'
-import { optimize } from './optimizer'
-import { generate } from './codegen/index'
+import { parse } from './parser/index' // 将HTML字符串转换成AST
+import { optimize } from './optimizer' // 优化AST
+import { generate } from './codegen/index' // 将AST语法树转化成render
 import { createCompilerCreator } from './create-compiler'
 
 // `createCompilerCreator` allows creating compilers that use alternative
@@ -17,6 +17,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
     optimize(ast, options)
   }
   const code = generate(ast, options)
+  debugger
   return {
     ast,
     render: code.render,

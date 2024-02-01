@@ -33,6 +33,10 @@ export function toggleObserving (value: boolean) {
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
+ * *附加到每个被观察对象的观察者类
+  *对象。一旦连接，观察者转换目标
+  *对象的属性键变成getter/setter
+  *收集依赖和调度更新
  */
 export class Observer {
   value: any;
@@ -43,15 +47,19 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 将Observer实例绑定到data的__ob__属性上面去，之前说过observe的时候会先检测是否已经有__ob__对象存放Observer实例了，def方法定义可以参考https://github.com/vuejs/vue/blob/dev/src/core/util/lang.js#L16
+
     def(value, '__ob__', this)
-    if (Array.isArray(value)) {
-      if (hasProto) {
-        protoAugment(value, arrayMethods)
+    if (Array.isArray(value)) { // 是数组
+      if (hasProto) { // 浏览器支持__proto__
+        protoAugment(value, arrayMethods) // 直接覆盖原型的方法来修改目标对象, 数组的7个方法
       } else {
-        copyAugment(value, arrayMethods, arrayKeys)
+        copyAugment(value, arrayMethods, arrayKeys) // 定义（覆盖）目标对象或数组的某一个方法
       }
+      // 如果是数组则需要遍历数组的每一个成员进行observe
       this.observeArray(value)
     } else {
+      // 如果是对象则直接walk进行绑定
       this.walk(value)
     }
   }
@@ -60,6 +68,9 @@ export class Observer {
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   *
+   * 遍历每一个对象并且在它们上面绑定getter与setter。
+   * 这个方法只有在value的类型是对象的时候才能被调用
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
@@ -70,6 +81,7 @@ export class Observer {
 
   /**
    * Observe a list of Array items.
+   * 对一个数组的每一个成员进行observe
    */
   observeArray (items: Array<any>) {
     for (let i = 0, l = items.length; i < l; i++) {
@@ -83,6 +95,7 @@ export class Observer {
 /**
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
+ * 直接覆盖原型的方法来修改目标对象或数组
  */
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
@@ -93,6 +106,7 @@ function protoAugment (target, src: Object) {
 /**
  * Augment a target Object or Array by defining
  * hidden properties.
+ * 定义（覆盖）目标对象或数组的某一个方法
  */
 /* istanbul ignore next */
 function copyAugment (target: Object, src: Object, keys: Array<string>) {
@@ -112,6 +126,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
+  // 防止重复观察
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -131,6 +146,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
+ * 为对象defineProperty上在变化时通知的属性
  */
 export function defineReactive (
   obj: Object,
@@ -140,12 +156,11 @@ export function defineReactive (
   shallow?: boolean
 ) {
   const dep = new Dep()
-
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
-
+  // 如果之前该对象已经预设了getter以及setter函数则将其取出来
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
@@ -161,6 +176,7 @@ export function defineReactive (
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         dep.depend()
+        // 进行依赖收集
         if (childOb) {
           childOb.dep.depend()
           if (Array.isArray(value)) {
@@ -188,6 +204,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+
       dep.notify()
     }
   })

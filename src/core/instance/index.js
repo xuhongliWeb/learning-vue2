@@ -12,6 +12,7 @@ function Vue (options) {
     // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof
     // get 小技巧 判断是否为new 调用的 this instanceof Vue
   ) {
+    // Vue是一个构造函数，应该用' new '关键字调用
     warn('Vue is a constructor and should be called with the `new` keyword')
   }
   // 初始化 -
