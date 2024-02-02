@@ -204,7 +204,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
-
+      // 只有之前addSub中的函数才会触发
       dep.notify()
     }
   })
